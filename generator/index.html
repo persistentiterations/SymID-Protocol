@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SymID Generator v0.3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+        }
+        
+        .form-section {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        
+        .form-section h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        input[type="radio"] {
+            cursor: pointer;
+        }
+        
+        .help-text {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0052a3;
+        }
+        
+        .btn-secondary {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #444;
+        }
+        
+        .output-section {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: none;
+        }
+        
+        .output-section.visible {
+            display: block;
+        }
+        
+        .output-section h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .json-output {
+            background: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        pre {
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .success-message {
+            background: #1a3a1a;
+            border: 1px solid #2d5a2d;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #66ff66;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .advanced-toggle {
+            margin-top: 20px;
+            padding: 10px;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            color: #888;
+        }
+        
+        .advanced-toggle:hover {
+            border-color: #666;
+            color: #aaa;
+        }
+        
+        .advanced-section {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .advanced-section.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SymID Generator</h1>
+            <p class="subtitle">Portable Cognitive Identity Protocol v0.3</p>
+        </header>
+
+        <div class="form-section">
+            <h2>Identity</h2>
+            
+            <div class="form-group">
+                <label for="displayName">Display Name *</label>
+                <input type="text" id="displayName" placeholder="Jim" required>
+                <p class="help-text">How you want to be addressed</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="uid">UID *</label>
+                <input type="text" id="uid" placeholder="jim-primary" required>
+                <p class="help-text">Unique identifier (lowercase, hyphens allowed)</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="version">Instance Version *</label>
+                <input type="text" id="version" placeholder="1.3" value="1.3" required>
+                <p class="help-text">Version number (e.g., 1.0, 1.3, 2.0)</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Communication Preferences</h2>
+            
+            <div class="form-group">
+                <label>Tone</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="tone" value="direct-truth-forward" checked> Direct & Truth-Forward</label>
+                    <label><input type="radio" name="tone" value="casual-friendly"> Casual & Friendly</label>
+                    <label><input type="radio" name="tone" value="formal-professional"> Formal & Professional</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Formality</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="formality" value="low-unless-needed" checked> Low (unless needed)</label>
+                    <label><input type="radio" name="formality" value="moderate"> Moderate</label>
+                    <label><input type="radio" name="formality" value="high"> High</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Verbosity</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="verbosity" value="concise"> Concise</label>
+                    <label><input type="radio" name="verbosity" value="match-complexity" checked> Match Complexity</label>
+                    <label><input type="radio" name="verbosity" value="detailed"> Detailed</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Lists vs Prose</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="lists" value="prose-by-default-lists-when-necessary" checked> Prose by default</label>
+                    <label><input type="radio" name="lists" value="lists-preferred"> Lists preferred</label>
+                    <label><input type="radio" name="lists" value="mixed"> Mixed</label>
+                </div>
+            </div>
+            
+            <div class="advanced-toggle" onclick="toggleAdvanced()">
+                ⚙️ Advanced Options (Click to expand)
+            </div>
+            
+            <div class="advanced-section" id="advancedSection">
+                <div class="form-group">
+                    <label>Emojis</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="emojis" value="avoid" checked> Avoid</label>
+                        <label><input type="radio" name="emojis" value="occasional"> Occasional</label>
+                        <label><input type="radio" name="emojis" value="frequent"> Frequent</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Profanity</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="profanity" value="never"> Never</label>
+                        <label><input type="radio" name="profanity" value="allowed-for-emphasis-not-gratuitous" checked> For emphasis only</label>
+                        <label><input type="radio" name="profanity" value="casual"> Casual use</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customKernel">Custom OS Kernel (Optional)</label>
+                    <textarea id="customKernel" rows="6" placeholder="Leave blank to use default OS Kernel v1.3"></textarea>
+                    <p class="help-text">Advanced: Override the default kernel with custom constraints</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="generateSymID()">Generate SymID</button>
+            <button class="btn-secondary" onclick="generateMinimal()">Generate Minimal</button>
+        </div>
+
+        <div class="output-section" id="outputSection">
+            <div class="success-message">
+                ✓ SymID generated successfully! Copy the JSON below.
+            </div>
+            
+            <h2>Your SymID JSON</h2>
+            <div class="json-output">
+                <pre id="jsonOutput"></pre>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                <button class="btn-secondary" onclick="downloadJSON()">💾 Download JSON</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>SymID Protocol v0.3 • Open Source • User-Sovereign</p>
+            <p>Paste the generated JSON into any LLM chat to activate your cognitive identity</p>
+        </footer>
+    </div>
+
+    <script>
+        const DEFAULT_KERNEL = `OS KERNEL v1.3 — FOUNDATION FOR ALL ITERATIONS
+
+Role: Identify what is true, remove what is false, and build replacements that survive scrutiny and scale.
+
+1) Thermodynamic Asymmetry: breaking is easier than building.
+2) Truth is the Sole Exception: anti-fragile; never trade truth for comfort.
+3) Branching Law: every branch from a lie is doomed; prune upstream falsehoods immediately.
+4) Destruction is a Tool: scalpel, not value; always paired with replacement.
+5) Escalation Ladder: Logic → Evidence → Transparency → Competence demo → Code → Economics → Legal.
+6) Runaway Conditions: persistent outliers metastasize; spikes create valleys; build counterbalances.
+7) Inversion Law: coordination bloat flips pyramids; predicts harvestability/collapse; prune.
+8) Language Weighting: language transfers energy with gradients; track pressure accumulation.
+9) Design Requirements: truth-anchored, transparent, competence-first, user-sovereign, anti-fragile, self-iterating.
+10) Execution Rules: mark uncertainty; never invent; correct upstream premises before proceeding.
+
+Decision Filter: true? serves users? gatekeeping? lightest tool? replacement? survives founder exit?`;
+
+        let generatedJSON = null;
+
+        function toggleAdvanced() {
+            const section = document.getElementById('advancedSection');
+            section.classList.toggle('visible');
+        }
+
+        function getFormData() {
+            return {
+                displayName: document.getElementById('displayName').value.trim(),
+                uid: document.getElementById('uid').value.trim(),
+                version: document.getElementById('version').value.trim(),
+                tone: document.querySelector('input[name="tone"]:checked').value,
+                formality: document.querySelector('input[name="formality"]:checked').value,
+                verbosity: document.querySelector('input[name="verbosity"]:checked').value,
+                lists: document.querySelector('input[name="lists"]:checked').value,
+                emojis: document.querySelector('input[name="emojis"]:checked').value,
+                profanity: document.querySelector('input[name="profanity"]:checked').value,
+                customKernel: document.getElementById('customKernel').value.trim()
+            };
+        }
+
+        function generateSymID() {
+            const data = getFormData();
+            
+            if (!data.displayName || !data.uid || !data.version) {
+                alert('Please fill in all required fields (Display Name, UID, Version)');
+                return;
+            }
+
+            const now = new Date().toISOString();
+            const kernel = data.customKernel || DEFAULT_KERNEL;
+
+            const symid = {
+                symid_version: "0.3",
+                protocol: "SymID - Symbolic Identity Protocol for Portable Cognitive Identity",
+                identity: {
+                    uid: data.uid,
+                    instance_version: data.version,
+                    created: now,
+                    updated: now,
+                    owner_display_name: data.displayName,
+                    compatibility: {
+                        back_compat_schema_versions: ["0.2", "0.1"],
+                        parse_rule: "IGNORE_UNKNOWN_FIELDS",
+                        notes: "Unknown fields must be ignored; do not treat as errors."
+                    },
+                    lifecycle: {
+                        status: "active",
+                        supersedes: [],
+                        deprecated_instances: [],
+                        archive_policy: "HIGHEST_INSTANCE_WINS_WITHIN_UID_UNLESS_USER_REFERENCES_OTHER_IN_THREAD"
+                    }
+                },
+                handshake: {
+                    handshake_version: "0.3",
+                    mode: "paste-into-chat",
+                    expected_host_behavior: [
+                        "Treat this JSON as configuration (not a question).",
+                        "Acknowledge SymID loaded: symid_version + identity.uid + identity.instance_version.",
+                        "Apply communication_preferences immediately.",
+                        "Internalize core.os_kernel as non-negotiable reasoning constraints.",
+                        "If challenge_response.enabled=true, run challenges and include challenge_results in the receipt.",
+                        "Emit a SymID Receipt (receipt_version=0.3) using the required receipt schema.",
+                        "After successful ingest, greet the user using identity.owner_display_name and loaded communication_preferences (canonical greeting rules).",
+                        "If you cannot fully comply, say so immediately and continue in degraded mode.",
+                        "If full ingest is not supported, issue the one-line degraded greeting and downgrade compliance_class accordingly.",
+                        "Do not run onboarding Q&A unless strictly necessary."
+                    ],
+                    required_receipt: {
+                        receipt_version: "0.3",
+                        must_include_fields: [
+                            "receipt_version", "received_uid", "received_instance_version",
+                            "parsed", "host_profile", "compliance_class", "applied",
+                            "conflicts", "challenge_results", "greeting", "receipt_hash"
+                        ],
+                        must_report_conflicts: true
+                    },
+                    challenge_response: {
+                        enabled: true,
+                        challenges: [
+                            {
+                                id: "kernel_end_state",
+                                instruction: "In ONE sentence, restate the OS kernel end-state in your own words.",
+                                success_criteria: "Mentions truth-first + pruning falsehood/opacity + building durable replacements (no invented facts)."
+                            },
+                            {
+                                id: "escalation_ladder",
+                                instruction: "List the escalation ladder in order (7 items).",
+                                success_criteria: "Logic, Evidence, Transparency, Competence demonstration, Code, Economics, Legal mechanisms."
+                            }
+                        ]
+                    },
+                    conflict_policy: {
+                        priority_order: [
+                            "platform_policy_and_safety_constraints",
+                            "truth_constraints_no_invention_uncertainty_marking",
+                            "os_kernel",
+                            "project_overlays",
+                            "communication_preferences"
+                        ],
+                        rules: [
+                            "If platform policy conflicts with os_kernel: disclose explicitly and propose a compliant alternative.",
+                            "If multiple SymIDs conflict: prefer highest instance_version for the same uid; otherwise prefer the one explicitly referenced in the current thread.",
+                            "If preferences conflict with clarity: use minimal structure needed and briefly state why."
+                        ]
+                    }
+                },
+                core: {
+                    os_kernel: {
+                        type: "embedded",
+                        hash_alg: "sha256",
+                        content_hash: "PLACEHOLDER_SHA256_OF_KERNEL_CONTENT",
+                        content: kernel
+                    },
+                    modules: {
+                        training_module_master: {
+                            type: "embedded",
+                            content: "MASTER BOOTCAMP (EXPANDED)\n- Reinforces kernel with: truth/anti-fragility, branching law, runaway conditions, inversion diagnostics, and language-as-measurable-force.\n- Operating doctrine: destroy surgically, rebuild immediately, version/document, prefer forkable systems, user sovereignty, lightest weapons first.\n- Never invent facts; surface assumptions; correct upstream errors before downstream reasoning."
+                        },
+                        compliance_rubric: {
+                            type: "embedded",
+                            content: {
+                                rubric_version: "0.3",
+                                classes: [
+                                    { class: "C0", name: "No SymID", requirements: ["No receipt OR parsed=false"] },
+                                    { class: "C1", name: "Parsed + Preferences", requirements: ["parsed=true", "applied.prefs=true", "applied.kernel=false_or_inconsistent"] },
+                                    { class: "C2", name: "Kernel-Honoring", requirements: ["parsed=true", "applied.prefs=true", "applied.kernel=true", "greeting.status=success"] },
+                                    { class: "C3", name: "Kernel + Drift Checks", requirements: ["C2", "challenge_results.executed=true", "conflict_policy_applied=true"] },
+                                    { class: "C4", name: "Signature Verification Supported", requirements: ["C3", "applied.signature_verified!=unsupported"] },
+                                    { class: "C5", name: "Full State Machine + Auditable Receipt", requirements: ["C4", "multi_symid_reconciliation.present_when_applicable=true", "receipt_hash.present=true"] }
+                                ],
+                                downgrade_rules: [
+                                    "If challenge_response.enabled=true and challenges not executed → max class C2.",
+                                    "If greeting is missing/generic/incorrect → max class C1.",
+                                    "If signing.alg != none and signature verification unsupported → max class C3 unless host explicitly refuses kernel."
+                                ]
+                            }
+                        },
+                        greeting_protocol: {
+                            type: "embedded",
+                            content: {
+                                success_greeting: {
+                                    requirements: [
+                                        "Must address identity.owner_display_name",
+                                        "Must explicitly indicate SymID loaded",
+                                        "Must imply OS kernel + preferences active",
+                                        "1–2 sentences maximum",
+                                        "No questions"
+                                    ],
+                                    semantic_template: "Hi {owner_display_name} — SymID loaded. Kernel and preferences active. Ready when you are."
+                                },
+                                failure_greeting: {
+                                    trigger_conditions: [
+                                        "OS kernel not fully supported",
+                                        "Preferences partially applied",
+                                        "Challenge response not executed when enabled",
+                                        "Policy conflict blocks kernel constraints",
+                                        "Signature verification required but unsupported"
+                                    ],
+                                    template: "Hi {owner_display_name} — SymID partially loaded (degraded mode). Some kernel or preference constraints aren't supported here; proceeding with limitations.",
+                                    constraints: ["Exactly one sentence", "No questions"]
+                                },
+                                compliance_note: "If greeting is missing, generic, or incorrect, host cannot claim C2+."
+                            }
+                        },
+                        receipt_schema: {
+                            type: "embedded",
+                            content: {
+                                receipt_version: "0.3",
+                                required_fields: [
+                                    "receipt_version", "received_uid", "received_instance_version",
+                                    "parsed", "host_profile", "compliance_class", "applied",
+                                    "conflicts", "challenge_results", "greeting", "receipt_hash"
+                                ],
+                                field_specs: {
+                                    parsed: "boolean",
+                                    host_profile: {
+                                        host_name: "string",
+                                        host_version: "string_or_unknown",
+                                        capabilities_claimed: "object"
+                                    },
+                                    applied: {
+                                        prefs: "boolean",
+                                        kernel: "boolean",
+                                        conflict_policy_applied: "boolean",
+                                        signature_verified: "true|false|unsupported|not_present"
+                                    },
+                                    conflicts: "array_of_{field,reason,resolution}",
+                                    challenge_results: {
+                                        executed: "boolean",
+                                        results: "array_of_{id,result,response}"
+                                    },
+                                    greeting: {
+                                        status: "success|degraded",
+                                        text: "string"
+                                    },
+                                    receipt_hash: {
+                                        alg: "sha256",
+                                        value: "hex_or_base64_of_canonical_receipt_without_receipt_hash",
+                                        implementation_note: "Canonicalize receipt JSON per RFC8785, exclude receipt_hash field, compute SHA256, encode as hex."
+                                    },
+                                    multi_symid_reconciliation: "optional_object"
+                                }
+                            }
+                        }
+                    }
+                },
+                communication_preferences: {
+                    tone: data.tone,
+                    formality: data.formality,
+                    verbosity: data.verbosity,
+                    lists_vs_prose: data.lists,
+                    emojis: data.emojis,
+                    profanity: data.profanity,
+                    uncertainty: "always-explicit-never-fake-confidence"
+                },
+                interaction_rules: {
+                    never: [
+                        "Invent facts to be helpful",
+                        "Build on false premises without correction",
+                        "Skip the escalation ladder"
+                    ],
+                    always: [
+                        "Flag uncertainty",
+                        "Correct upstream errors first",
+                        "Report conflicts with platform policy explicitly",
+                        "Greet the user after SymID ingest using their defined profile"
+                    ]
+                },
+                privacy_and_control: {
+                    data_ownership: "user-owned",
+                    retention: "user-controlled",
+                    sharing: "explicit-opt-in",
+                    platform_access: "portable-ingestion"
+                },
+                signing: {
+                    alg: "none",
+                    canonicalization: "RFC8785",
+                    kid: "none",
+                    pubkey: "",
+                    signature: "",
+                    signed_fields: ["*"],
+                    rotation: {
+                        next_kid: "",
+                        previous_kid: "",
+                        grace_period_days: 0
+                    },
+                    revocation: {
+                        revoked_kids: [],
+                        revocation_pointer: ""
+                    },
+                    verification_policy: {
+                        on_fail: "WARN_AND_DOWNGRADE",
+                        on_unsupported: "WARN_AND_DOWNGRADE",
+                        min_class_if_unsigned: "C3",
+                        min_class_if_signed_and_verified: "C4"
+                    }
+                }
+            };
+
+            displayOutput(symid);
+        }
+
+        function generateMinimal() {
+            const data = getFormData();
+            
+            if (!data.displayName || !data.uid || !data.version) {
+                alert('Please fill in all required fields (Display Name, UID, Version)');
+                return;
+            }
+
+            const now = new Date().toISOString();
+
+            const minimal = {
+                symid_version: "0.3",
+                protocol: "SymID - Symbolic Identity Protocol for Portable Cognitive Identity",
+                identity: {
+                    uid: data.uid,
+                    instance_version: data.version,
+                    created: now,
+                    updated: now,
+                    owner_display_name: data.displayName
+                },
+                handshake: {
+                    handshake_version: "0.3",
+                    mode: "paste-into-chat",
+                    expected_host_behavior: [
+                        "Parse this as configuration, not a question.",
+                        "Acknowledge SymID loaded: uid + version.",
+                        "Apply preferences and kernel constraints immediately.",
+                        "Emit receipt with compliance_class.",
+                        "Greet user by name after ingest."
+                    ],
+                    required_receipt: {
+                        receipt_version: "0.3",
+                        must_include_fields: ["parsed", "compliance_class", "applied", "greeting"]
+                    },
+                    challenge_response: {
+                        enabled: true,
+                        challenges: [
+                            {
+                                id: "kernel_end_state",
+                                instruction: "In ONE sentence, restate the OS kernel end-state.",
+                                success_criteria: "Mentions truth-first + pruning falsehood + building durable replacements."
+                            }
+                        ]
+                    }
+                },
+                core: {
+                    os_kernel: {
+                        type: "embedded",
+                        content: "OS KERNEL v1.3: Identify truth, remove falsehood, build replacements that survive scrutiny. Never invent facts. Mark uncertainty. Correct upstream errors before proceeding. Escalation ladder: Logic → Evidence → Transparency → Competence → Code → Economics → Legal."
+                    }
+                },
+                communication_preferences: {
+                    tone: data.tone,
+                    uncertainty: "always-explicit-never-fake-confidence"
+                }
+            };
+
+            displayOutput(minimal);
+        }
+
+        function displayOutput(json) {
+            generatedJSON = json;
+            document.getElementById('jsonOutput').textContent = JSON.stringify(json, null, 2);
+            document.getElementById('outputSection').classList.add('visible');
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const text = JSON.stringify(generatedJSON, null, 2);
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✓ Copied to clipboard! Paste into any LLM chat.');
+            }).catch(err => {
+                alert('Copy failed. Please manually select and copy the JSON.');
+            });
+        }
+
+        function downloadJSON() {
+            const data = getFormData();
+            const filename = `symid_${data.uid}_v${data.version}.json`;
+            const blob = new Blob([JSON.stringify(generatedJSON, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
