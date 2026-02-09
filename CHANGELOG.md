@@ -1,5 +1,33 @@
 # SymID Protocol Changelog
 
+## v0.3.2 (Clarifications & Scope) - 2026-02-09
+
+### Clarifications
+
+1. **Replaced “internalize” with “evaluate compatibility”**
+   - Hosts must evaluate compatibility with OS kernel principles and disclose whether they can be honored in the current environment.
+2. **Receipt-first wording softened**
+   - The receipt must still be the first user‑visible response, but the spec now clarifies that hosts may issue the greeting within the receipt and should not be penalised if platform‑inserted messages appear before the host can respond.
+3. **Challenges are diagnostic**
+   - Challenge‑response remains enabled but is explicitly labelled as diagnostic; hosts must report failures rather than mask them.
+4. **Scope clarification added**
+   - A new `scope_clarification` section explicitly states what SymID does not do (e.g. modify training data, persist memory, override platform policies) and what it is (e.g. a handshake and disclosure protocol, a host capability self‑report, a portable trust artifact).
+5. **Receipt interpretation note**
+   - Receipts now include an `interpretation_note` clarifying that host‑reported fields represent claims at the time of interaction, not guarantees of internal behaviour.
+6. **Cryptographic class limitations**
+   - The compliance rubric notes that classes C4 and C5 may be unattainable in many hosted LLM environments and hosts should report unsupported capabilities without penalty.
+7. **Downgrade rule amendment**
+   - Added a rule specifying that platform‑inserted messages preceding the receipt should not cause automatic downgrading.
+
+### Impact
+
+These changes refine host obligations and reduce friction by acknowledging platform limitations while preserving core truth‑first constraints. They also provide explicit guardrails to prevent confusion about SymID’s scope and enforce clear disclosure of limitations.
+
+### Compatibility
+
+- Back‑compatible with v0.3.1, v0.3 and earlier.  
+- Example SymID files updated to v0.3.2 are included in the repository.
+
 ## v0.3.1 (Hardening Release) - 2026-02-09
 
 ### Critical Fixes

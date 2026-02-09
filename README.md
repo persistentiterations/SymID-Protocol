@@ -1,4 +1,4 @@
-# SymID Protocol v0.3
+# SymID Protocol v0.3.2
 
 **Portable Cognitive Identity for LLMs**
 
@@ -110,5 +110,5 @@ Apache 2.0 - See [LICENSE](./LICENSE)
 
 ---
 
-**Status:** v0.3 finalized (Feb 2026)  
-**Next:** Community testing across platforms + compliance leaderboard
+**Status:** v0.3.2 refined (Feb 2026)  
+**Next:** Community testing across platforms, adoption of v0.3.2 clarifications & compliance leaderboard
